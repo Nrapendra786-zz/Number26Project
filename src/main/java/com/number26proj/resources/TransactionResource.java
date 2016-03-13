@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,14 +22,12 @@ import java.util.Map;
 @Component
 public class TransactionResource {
 
-    private static Map<Long, Transaction> transactionStore = new HashMap<>();
+    private static Map<Long, Transaction> transactionStore = Collections.synchronizedMap(new HashMap<>());
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionController.class.getName());
 
     public void storeTransaction(Long transactionId, Transaction transaction) {
-        synchronized (this) {
             transactionStore.put(transactionId, transaction);
-        }
     }
 
     public Transaction getTransaction(Long transactionId) {
@@ -36,9 +36,7 @@ public class TransactionResource {
     }
 
     public void deleteTransaction(Long transactionId) {
-        synchronized (this) {
             transactionStore.remove(transactionId);
-        }
     }
 
     public Map<Long, Transaction> getTransactionStore() {
